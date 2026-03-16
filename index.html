@@ -9,7 +9,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
 :root{
-  --bg:#0e0e10;--bg2:#17171a;--bg3:#1f1f24;--bg4:#26262c;
+  --bg:#1a1a1e;--bg2:#222226;--bg3:#2a2a30;--bg4:#32323a;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
   --text:#f0efe8;--muted:#7a7a82;--muted2:#44444c;
   --accent:#60c8f0;--green:#c8f060;--red:#f06060;--orange:#f0a060;--purple:#b060f0;
@@ -17,7 +17,7 @@
   --r:14px;--rs:8px;
 }
 .light{
-  --bg:#f4f3ef;--bg2:#ffffff;--bg3:#eceae2;--bg4:#e0ddd4;
+  --bg:#e8e6e0;--bg2:#f2f0ea;--bg3:#dedad2;--bg4:#d4d0c8;
   --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);
   --text:#1a1a1a;--muted:#88877f;--muted2:#c0bdb4;
   --accent:#1a9fd4;--green:#5a8e08;--red:#d03030;--orange:#b46010;--purple:#8030d0;
@@ -531,7 +531,7 @@ function showToast(msg){
 // ═══════════════════════════════════
 //  THEME
 // ═══════════════════════════════════
-let isDark = localStorage.getItem('nt_theme')!=='light';
+let isDark = localStorage.getItem('nt_theme')=='dark';
 function applyTheme(){ document.body.classList.toggle('light',!isDark); document.getElementById('theme-btn').textContent=isDark?'🌙':'☀️'; }
 function toggleTheme(){ isDark=!isDark; localStorage.setItem('nt_theme',isDark?'dark':'light'); applyTheme(); }
 applyTheme();
@@ -913,12 +913,24 @@ function showLogDetail(idx){
   const loopDays=getLoopDays();
   const loopIdx=loopDays.findIndex(ld=>ld.id===log.dagId);
   document.getElementById('ld-title').textContent=log.dagName;
-  document.getElementById('ld-meta').textContent=(log.isSeparat?'Separat':`Dag ${loopIdx>=0?loopIdx+1:log.dagId+1}`)+' · '+NO_DAYS_FULL[d.getDay()]+' '+fmt(d);
+  document.getElementById('ld-meta').textContent=(log.isSeparat?'Separat':`Dag ${loopIdx>=0?loopIdx+1:log.dagId+1}`);
   const container=document.getElementById('ld-content'); container.innerHTML='';
+
+  // Date editor
+  const dateWrap=document.createElement('div');
+  dateWrap.className='date-row';
+  dateWrap.style.margin='0 16px 10px';
+  dateWrap.innerHTML=`<label>Dato</label>
+    <input type="date" id="ld-date-input" value="${toISO(d)}"
+      onchange="updateLogDate(${idx}, this.value)">`;
+  container.appendChild(dateWrap);
+
+  // Delete button
   const delBtn=document.createElement('button');
   delBtn.className='ld-del-btn'; delBtn.textContent='🗑 Slett denne økten';
   delBtn.onclick=()=>openDeleteLogModal(idx);
   container.appendChild(delBtn);
+
   if(log.note){
     const nd=document.createElement('div'); nd.className='hist-note';
     nd.innerHTML=`<div class="hist-note-label">Notat</div>${log.note}`;
@@ -936,6 +948,19 @@ function showLogDetail(idx){
   });
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-logdetail').classList.add('active');
+}
+
+function updateLogDate(idx, dateStr){
+  const parts=dateStr.split('-');
+  const d=new Date(+parts[0],+parts[1]-1,+parts[2],12,0,0);
+  logs[idx].date=d.toISOString();
+  // Update meta label
+  const loopDays=getLoopDays();
+  const loopIdx=loopDays.findIndex(ld=>ld.id===logs[idx].dagId);
+  document.getElementById('ld-meta').textContent=
+    (logs[idx].isSeparat?'Separat':`Dag ${loopIdx>=0?loopIdx+1:logs[idx].dagId+1}`)+' · '+NO_DAYS_FULL[d.getDay()]+' '+fmt(d);
+  sortLogs(); saveLS();
+  showToast('Dato oppdatert');
 }
 
 // ═══════════════════════════════════
