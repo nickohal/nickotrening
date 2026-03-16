@@ -520,7 +520,7 @@ function saveAS(){ localStorage.setItem('nt_active',JSON.stringify(activeSession
 function clearAS(){ activeSession=null; localStorage.removeItem('nt_active'); }
 function saveSetting(k,v){ settings[k]=v; localStorage.setItem('nt_settings',JSON.stringify(settings)); }
 function saveProgram(){ localStorage.setItem('nt_program',JSON.stringify(PROGRAM)); showToast('Program lagret!'); }
-function sortLogs(){ logs.sort((a,b)=>new Date(b.date)-new Date(a.date)); }
+function sortLogs(){ logs.sort((a,b)=>new Date(b.date)-new Date(a.date)||b.id-a.id); }
 
 function showToast(msg){
   const t=document.getElementById('toast');
@@ -791,6 +791,22 @@ function toggleDone(ei,si){
     const btn=row.querySelector('.set-done-btn');
     if(btn) btn.classList.toggle('done',s.done);
   }
+
+  // Auto-fill next set with same kg if it has no value yet
+  if(s.done && s.kg){
+    const sd=activeSession.sessionData[ei];
+    const nextSet=sd.sets[si+1];
+    if(nextSet && !nextSet.done && !nextSet.kg){
+      nextSet.kg=s.kg;
+      nextSet.prefilled=false;
+      const nextRow=document.getElementById(`set-${ei}-${si+1}`);
+      if(nextRow){
+        const inp=nextRow.querySelector('input');
+        if(inp){ inp.value=s.kg; inp.classList.remove('prefilled'); }
+      }
+    }
+  }
+
   const sd=activeSession.sessionData[ei];
   const block=document.getElementById(`ex-block-${ei}`);
   if(block) block.classList.toggle('ex-done',sd.sets.every(s=>s.done));
