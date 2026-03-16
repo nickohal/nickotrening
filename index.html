@@ -1138,12 +1138,21 @@ function updateUserEmailLabel(){
 // Data sync
 async function sbSave(key, value){
   if(!sbUser) return;
-  await sbFetch('/rest/v1/training_data', {
-    method:'POST',
-    token: sbUser.access_token,
-    headers:{'Prefer':'resolution=merge-duplicates'},
-    body: JSON.stringify({user_id:sbUser.id, key, value, updated_at:new Date().toISOString()})
-  });
+  try {
+    const res = await sbFetch('/rest/v1/training_data', {
+      method:'POST',
+      token: sbUser.access_token,
+      headers:{
+        'Prefer':'resolution=merge-duplicates,return=minimal',
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({user_id:sbUser.id, key, value, updated_at:new Date().toISOString()})
+    });
+    if(!res.ok){
+      const err = await res.text();
+      console.error('sbSave error:', res.status, err);
+    }
+  } catch(e){ console.error('sbSave exception:', e); }
 }
 async function sbLoad(key){
   if(!sbUser) return null;
