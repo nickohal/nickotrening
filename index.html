@@ -575,12 +575,14 @@ function getNextDagId(){
   const loop=getLoopDays();
   if(!loop.length) return null;
   if(!logs.length) return loop[0].id;
-  // Find last logged loop day
+  // Find last logged loop day — use find() not array index
   for(let i=0;i<logs.length;i++){
     const log=logs[i];
-    const dag=PROGRAM[log.dagId];
+    if(log.isSeparat) continue; // skip separate programs
+    const dag=PROGRAM.find(d=>d.id===log.dagId);
     if(dag&&!dag.separat){
       const loopIdx=loop.findIndex(d=>d.id===log.dagId);
+      if(loopIdx===-1) continue;
       const nextIdx=(loopIdx+1)%loop.length;
       return loop[nextIdx].id;
     }
