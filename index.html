@@ -515,7 +515,7 @@ const NO_DAYS_FULL=['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','L�
 const fmt = d=>`${d.getDate()}. ${NO_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 const toISO = d=>{ const z=n=>n.toString().padStart(2,'0'); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`; };
 
-function saveLS(){ localStorage.setItem('nt_logs',JSON.stringify(logs)); }
+function saveLS(){ localStorage.setItem('nt_logs',JSON.stringify(logs)); if(typeof sbSave==='function'&&sbUser) sbSave('logs',logs); }
 function saveAS(){ localStorage.setItem('nt_active',JSON.stringify(activeSession)); }
 function clearAS(){ activeSession=null; localStorage.removeItem('nt_active'); }
 function saveSetting(k,v){ settings[k]=v; localStorage.setItem('nt_settings',JSON.stringify(settings)); }
@@ -858,7 +858,7 @@ function finishSession(){
   sortLogs(); saveLS(); clearAS(); clearInterval(restInterval);
   document.getElementById('rest-timer').classList.remove('visible');
   showToast('Økt lagret 💪');
-  setTimeout(()=>showScreen('home'),400);
+  setTimeout(()=>{ renderHome(); showScreen('home'); },400);
 }
 
 // ═══════════════════════════════════
@@ -1173,10 +1173,7 @@ async function loadFromCloud(){
 }
 
 // Override save functions to also sync
-const _origSaveLS = saveLS;
-function saveLS(){ localStorage.setItem('nt_logs',JSON.stringify(logs)); sbSave('logs',logs); }
 function saveProgramCloud(){ localStorage.setItem('nt_program',JSON.stringify(PROGRAM)); sbSave('program',PROGRAM); showToast('Program lagret!'); }
-// Override saveProgram
 window.saveProgram = saveProgramCloud;
 
 // ═══════════════════════════════════
