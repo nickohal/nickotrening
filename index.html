@@ -303,6 +303,13 @@ select.setting-select{background:var(--bg3);border:1px solid var(--border2);bord
   <div class="section-title">Data</div>
   <button class="data-btn" onclick="exportData()">📤 Eksporter treningsdata</button>
   <label class="data-btn">📥 Importer treningsdata<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+  <div class="section-title">Konto</div>
+  <div class="settings-block">
+    <div class="setting-item">
+      <div><div class="setting-label" id="user-email-label">Ikke logget inn</div><div class="setting-sub">Synkronisert med skyen</div></div>
+      <button onclick="sbSignOut()" style="background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.2);color:var(--red);border-radius:var(--rs);padding:7px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;letter-spacing:1px">Logg ut</button>
+    </div>
+  </div>
   <div class="section-title">Innstillinger</div>
   <div class="settings-block">
     <div class="setting-item">
@@ -426,6 +433,20 @@ select.setting-select{background:var(--bg3);border:1px solid var(--border2);bord
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- AUTH OVERLAY -->
+<div id="auth-overlay" style="display:flex;position:fixed;inset:0;background:var(--bg);z-index:1000;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px">
+  <div style="width:100%;max-width:360px">
+    <div style="font-size:36px;margin-bottom:8px">💪</div>
+    <h1 style="font-size:28px;font-weight:800;letter-spacing:-1px;color:var(--accent);margin-bottom:4px">Nicko</h1>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:32px">Treningslogg</p>
+    <input id="auth-email" type="email" inputmode="email" placeholder="E-post" autocomplete="email" style="width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:14px 16px;color:var(--text);font-family:var(--sans);font-size:16px;margin-bottom:10px;-webkit-appearance:none"><br>
+    <input id="auth-password" type="password" placeholder="Passord" style="width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:14px 16px;color:var(--text);font-family:var(--sans);font-size:16px;margin-bottom:6px;-webkit-appearance:none"><br>
+    <p id="auth-error" style="font-family:var(--mono);font-size:11px;color:var(--red);min-height:18px;margin-bottom:12px"></p>
+    <button id="auth-submit" onclick="handleAuth(false)" style="width:100%;padding:15px;background:var(--accent);color:#0e0e10;border:none;border-radius:var(--r);font-family:var(--sans);font-size:16px;font-weight:700;cursor:pointer;margin-bottom:10px">Logg inn</button><br>
+    <button onclick="handleAuth(true)" style="width:100%;padding:13px;background:transparent;color:var(--muted);border:1px solid var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:12px;cursor:pointer;text-transform:uppercase;letter-spacing:1px">Opprett ny konto</button>
+  </div>
+</div>
 
 <script>
 // ═══════════════════════════════════
@@ -1064,10 +1085,137 @@ function importData(e){
 }
 
 // ═══════════════════════════════════
+//  SUPABASE
+// ═══════════════════════════════════
+const SB_URL = 'https://kssrxxappgjxqlsvzkzz.supabase.co';
+const SB_KEY = 'sb_publishable_nGKauS_eH27LQuej7rUUFg_K1oqh7p5';
+let sbUser = null;
+
+async function sbFetch(path, opts={}){
+  const headers = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':`Bearer ${opts.token||SB_KEY}`,...(opts.headers||{})};
+  const res = await fetch(SB_URL+path, {...opts, headers});
+  return res;
+}
+
+// Auth
+async function sbSignUp(email, password){
+  const res = await sbFetch('/auth/v1/signup', {method:'POST', body:JSON.stringify({email,password})});
+  return res.json();
+}
+async function sbSignIn(email, password){
+  const res = await sbFetch('/auth/v1/token?grant_type=password', {method:'POST', body:JSON.stringify({email,password})});
+  return res.json();
+}
+async function sbSignOut(){
+  if(!sbUser) return;
+  await sbFetch('/auth/v1/logout', {method:'POST', token:sbUser.access_token});
+  sbUser = null;
+  localStorage.removeItem('nt_sb_user');
+  showAuthScreen();
+}
+async function sbGetUser(token){
+  const res = await sbFetch('/auth/v1/user', {token});
+  if(res.ok) return res.json();
+  return null;
+}
+
+// Data sync
+async function sbSave(key, value){
+  if(!sbUser) return;
+  await sbFetch('/rest/v1/training_data', {
+    method:'POST',
+    token: sbUser.access_token,
+    headers:{'Prefer':'resolution=merge-duplicates'},
+    body: JSON.stringify({user_id:sbUser.id, key, value, updated_at:new Date().toISOString()})
+  });
+}
+async function sbLoad(key){
+  if(!sbUser) return null;
+  const res = await sbFetch(`/rest/v1/training_data?user_id=eq.${sbUser.id}&key=eq.${key}&select=value`, {token:sbUser.access_token});
+  if(!res.ok) return null;
+  const rows = await res.json();
+  return rows.length ? rows[0].value : null;
+}
+async function syncToCloud(){
+  if(!sbUser) return;
+  await Promise.all([
+    sbSave('program', PROGRAM),
+    sbSave('logs', logs),
+    sbSave('settings', settings)
+  ]);
+}
+async function loadFromCloud(){
+  if(!sbUser) return false;
+  const [program, logsData, settingsData] = await Promise.all([
+    sbLoad('program'), sbLoad('logs'), sbLoad('settings')
+  ]);
+  if(program) PROGRAM = program;
+  if(logsData) logs = logsData;
+  if(settingsData) settings = settingsData;
+  sortLogs();
+  return true;
+}
+
+// Override save functions to also sync
+const _origSaveLS = saveLS;
+function saveLS(){ localStorage.setItem('nt_logs',JSON.stringify(logs)); sbSave('logs',logs); }
+function saveProgramCloud(){ localStorage.setItem('nt_program',JSON.stringify(PROGRAM)); sbSave('program',PROGRAM); showToast('Program lagret!'); }
+// Override saveProgram
+window.saveProgram = saveProgramCloud;
+
+// ═══════════════════════════════════
+//  AUTH UI
+// ═══════════════════════════════════
+function showAuthScreen(){
+  document.getElementById('auth-overlay').style.display='flex';
+}
+function hideAuthScreen(){
+  document.getElementById('auth-overlay').style.display='none';
+  const el=document.getElementById('user-email-label');
+  if(el&&sbUser) el.textContent=sbUser.email;
+}
+
+async function handleAuth(isSignup){
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  const btn = document.getElementById('auth-submit');
+  if(!email||!password){ errEl.textContent='Fyll inn e-post og passord'; return; }
+  btn.textContent='Laster...'; btn.disabled=true; errEl.textContent='';
+  try {
+    const data = isSignup ? await sbSignUp(email,password) : await sbSignIn(email,password);
+    if(data.error||data.msg){ errEl.textContent=data.error||data.msg; btn.textContent=isSignup?'Opprett konto':'Logg inn'; btn.disabled=false; return; }
+    const token = data.access_token;
+    const user = await sbGetUser(token);
+    if(!user){ errEl.textContent='Kunne ikke hente bruker'; btn.textContent=isSignup?'Opprett konto':'Logg inn'; btn.disabled=false; return; }
+    sbUser = {id:user.id, email:user.email, access_token:token};
+    localStorage.setItem('nt_sb_user', JSON.stringify(sbUser));
+    hideAuthScreen();
+    showToast(isSignup?'Konto opprettet!':'Logget inn!');
+    const loaded = await loadFromCloud();
+    renderHome(); renderPR();
+  } catch(e){ errEl.textContent='Nettverksfeil, prøv igjen'; btn.textContent=isSignup?'Opprett konto':'Logg inn'; btn.disabled=false; }
+}
+
+// ═══════════════════════════════════
 //  INIT
 // ═══════════════════════════════════
 if(activeSession && !PROGRAM.find(d=>d.id===activeSession.dagId)) clearAS();
 sortLogs();
+
+// Try restore session
+(async()=>{
+  const saved = localStorage.getItem('nt_sb_user');
+  if(saved){
+    try {
+      const u = JSON.parse(saved);
+      const user = await sbGetUser(u.access_token);
+      if(user){ sbUser={id:user.id,email:user.email,access_token:u.access_token}; hideAuthScreen(); await loadFromCloud(); renderHome(); renderPR(); }
+      else { showAuthScreen(); }
+    } catch(e){ showAuthScreen(); }
+  } else { showAuthScreen(); }
+})();
+
 renderHome();
 </script>
 </body>
