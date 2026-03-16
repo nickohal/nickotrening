@@ -1139,18 +1139,38 @@ function updateUserEmailLabel(){
 async function sbSave(key, value){
   if(!sbUser) return;
   try {
-    const res = await sbFetch('/rest/v1/training_data', {
-      method:'POST',
-      token: sbUser.access_token,
-      headers:{
-        'Prefer':'resolution=merge-duplicates,return=minimal',
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify({user_id:sbUser.id, key, value, updated_at:new Date().toISOString()})
-    });
-    if(!res.ok){
-      const err = await res.text();
-      console.error('sbSave error:', res.status, err);
+    // Try PATCH first (update existing row)
+    const patch = await sbFetch(
+      `/rest/v1/training_data?user_id=eq.${sbUser.id}&key=eq.${key}`,
+      {
+        method:'PATCH',
+        token: sbUser.access_token,
+        headers:{'Prefer':'return=minimal','Content-Type':'application/json'},
+        body: JSON.stringify({value, updated_at:new Date().toISOString()})
+      }
+    );
+    if(patch.ok){
+      const text = await patch.text();
+      // If no rows were updated (empty response with 204 but nothing matched), do POST
+      if(patch.status===204 || text==='[]' || text===''){
+        // Check if row exists
+        const check = await sbFetch(
+          `/rest/v1/training_data?user_id=eq.${sbUser.id}&key=eq.${key}&select=id`,
+          {token: sbUser.access_token}
+        );
+        const rows = await check.json();
+        if(!rows.length){
+          // Insert new row
+          await sbFetch('/rest/v1/training_data', {
+            method:'POST',
+            token: sbUser.access_token,
+            headers:{'Prefer':'return=minimal','Content-Type':'application/json'},
+            body: JSON.stringify({user_id:sbUser.id, key, value, updated_at:new Date().toISOString()})
+          });
+        }
+      }
+    } else {
+      console.error('sbSave PATCH error:', patch.status, await patch.text());
     }
   } catch(e){ console.error('sbSave exception:', e); }
 }
