@@ -225,12 +225,13 @@ select.setting-select{background:var(--bg3);border:1px solid var(--border2);bord
 .data-btn:active{background:var(--bg3)}
 
 /* NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(14,14,16,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(39,39,48,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
 .light .bottom-nav{background:rgba(244,243,239,.95)}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;padding:4px 0;-webkit-user-select:none;position:relative}
-.nav-btn .nav-icon{font-size:19px;line-height:1}
+.nav-btn .nav-icon{font-size:19px;line-height:1;color:var(--muted);transition:color .15s}
 .nav-btn .nav-label{font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
 .nav-btn.active .nav-label{color:var(--accent)}
+.nav-btn.active .nav-icon{color:var(--accent)}
 .nav-dot{position:absolute;top:1px;right:calc(50% - 18px);width:7px;height:7px;background:var(--green);border-radius:50%;border:2px solid var(--bg);display:none}
 .nav-dot.visible{display:block}
 .light .nav-dot{border-color:var(--bg)}
@@ -645,7 +646,7 @@ function renderHome(){
         <div class="nc-name">Dag ${getLoopDays().findIndex(d=>d.id===dag.id)+1} — ${dag.name}</div>
         <div class="nc-sub">${dag.subtitle} · ${dag.exercises.length} øvelser · ${dag.exercises.reduce((a,e)=>a+e.sets,0)} sett</div>
       </div>
-      <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 20px rgba(96,200,240,.2)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0e0e10" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>`;
   } else { wrap.innerHTML=''; }
 
@@ -662,7 +663,7 @@ function renderHome(){
       <div class="dc-num">Dag ${li+1}</div>
       <div class="dc-name">${d.name}</div>
       <div class="dc-meta">${d.exercises.length} øvelser · ${d.exercises.reduce((a,e)=>a+e.sets,0)} sett</div>
-    </div><div class="dc-arrow">▶</div>`;
+    </div><div class="dc-arrow"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>`;
     c.onclick=()=>startSession(d.id,false);
     dl.appendChild(c);
   });
@@ -677,7 +678,7 @@ function renderHome(){
       <span class="dag-tag tag-separat">Separat</span>
       <div class="dc-name">${d.name}</div>
       <div class="dc-meta">${d.subtitle?d.subtitle+' · ':''}${d.exercises.length} øvelser</div>
-    </div><div class="dc-arrow">▶</div>`;
+    </div><div class="dc-arrow"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>`;
     c.onclick=()=>startSession(d.id,true);
     sl.appendChild(c);
   });
