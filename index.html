@@ -309,6 +309,10 @@ select.setting-select{background:var(--bg3);border:1px solid var(--border2);bord
       <div><div class="setting-label" id="user-email-label">Ikke logget inn</div><div class="setting-sub">Synkronisert med skyen</div></div>
       <button onclick="sbSignOut()" style="background:rgba(240,96,96,.1);border:1px solid rgba(240,96,96,.2);color:var(--red);border-radius:var(--rs);padding:7px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;letter-spacing:1px">Logg ut</button>
     </div>
+    <div class="setting-item">
+      <div><div class="setting-label">Endre passord</div><div class="setting-sub">Send reset-lenke til e-post</div></div>
+      <button onclick="changePassword()" style="background:rgba(96,200,240,.1);border:1px solid rgba(96,200,240,.2);color:var(--accent);border-radius:var(--rs);padding:7px 14px;font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;letter-spacing:1px">Send lenke</button>
+    </div>
   </div>
   <div class="section-title">Innstillinger</div>
   <div class="settings-block">
@@ -1118,6 +1122,16 @@ async function sbGetUser(token){
   if(res.ok) return res.json();
   return null;
 }
+async function changePassword(){
+  if(!sbUser){ showToast('Ikke logget inn'); return; }
+  const res = await sbFetch('/auth/v1/recover', {method:'POST', body:JSON.stringify({email:sbUser.email})});
+  if(res.ok){ showToast('Reset-lenke sendt til '+sbUser.email); }
+  else { showToast('Feil — prøv igjen'); }
+}
+function updateUserEmailLabel(){
+  const el=document.getElementById('user-email-label');
+  if(el&&sbUser) el.textContent=sbUser.email;
+}
 
 // Data sync
 async function sbSave(key, value){
@@ -1210,7 +1224,7 @@ sortLogs();
     try {
       const u = JSON.parse(saved);
       const user = await sbGetUser(u.access_token);
-      if(user){ sbUser={id:user.id,email:user.email,access_token:u.access_token}; hideAuthScreen(); await loadFromCloud(); renderHome(); renderPR(); }
+      if(user){ sbUser={id:user.id,email:user.email,access_token:u.access_token}; hideAuthScreen(); updateUserEmailLabel(); await loadFromCloud(); renderHome(); renderPR(); }
       else { showAuthScreen(); }
     } catch(e){ showAuthScreen(); }
   } else { showAuthScreen(); }
