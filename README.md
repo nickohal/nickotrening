@@ -1,29 +1,55 @@
-💪 NickoTrening
-En personlig treningsapp bygget som en progressiv webapp (PWA). Hostet på Vercel, med Supabase som backend for autentisering og skylagring.
+Nicko 💪
+En personlig treningsapp bygget som en progressiv webapp (PWA). Hostet på Vercel, med Supabase som backend for autentisering og skylagring, og Claude AI for øvelsesinformasjon.
 Live app: nickotrening.vercel.app
 
 Funksjoner
+Trening
 
 4-dagers treningsprogram med automatisk dag-progresjon basert på historikk
-Logging av vekt og reps per sett
+Separate program utenfor hoved-loopen
+Oppvarmingsguide tilpasset styrke / hypertrofi øverst i hver økt
 Forrige økts vekter forhåndsutfylt automatisk
 Automatisk utfylling av neste sett basert på fullført sett
-Personlige rekorder (PR) med oversikt per øvelse
-Separate program utenfor hoved-loopen
-Hviletimer mellom sett
+Hviletimer med visuell nedtelling mellom sett
 Notatfelt per økt
-Mørk og lys modus
-Eksport og import av treningsdata som JSON
-Skylagring via Supabase — synkronisert på tvers av enheter
-Kan installeres på hjemskjermen på iPhone og Android
+Endre dato på økter — logg tidligere treninger
+
+AI
+
+Trykk "AI info" på en øvelse for å få teknikktips, muskler som trenes og vanlige feil — generert av Claude i sanntid
+
+Historikk og analyse
+
+Full treningslogg med søkbar historikk
+Rediger vekt og reps på fullførte økter i etterkant
+Endre dato på loggede økter
+Slett enkeltøkter
+
+PR og progresjon
+
+Personlige rekorder per øvelse med dato
+Interaktiv progresjonsgraf — kg over tid per øvelse
+
+Design og brukeropplevelse
+
+Mørk og lys modus (lys er standard)
+Konfetti-animasjon når alle sett i en øvelse fullføres
+Stor feiring når hele økten er fullført
+Kan installeres på hjemskjermen på iPhone og Android som en PWA
+
+Data
+
+Skylagring via Supabase — synkronisert på tvers av alle enheter
+Eksport og import av all treningsdata som JSON
+Lokal lagring som backup
 
 
 Teknologi
-DelTeknologiFrontendRen HTML, CSS og JavaScriptHostingVercelDatabaseSupabase (PostgreSQL)AutentiseringSupabase AuthFonterSyne + DM Mono (Google Fonts)
+DelTeknologiFrontendRen HTML, CSS og JavaScriptHostingVercelDatabaseSupabase (PostgreSQL)AutentiseringSupabase AuthAIClaude API (Anthropic) via Vercel serverless functionFonterSyne + DM Mono (Google Fonts)GrafChart.js
 
 Oppsett
 1. Klon repoet
-bashgit clone https://github.com/dittbrukernavn/nickotrening.git
+bashgit clone https://github.com/nickohal/nickotrening.git
 2. Supabase
 Opprett et prosjekt på supabase.com og kjør følgende SQL:
 sqlcreate table training_data (
@@ -43,13 +69,24 @@ using (auth.uid() = user_id);
 Hent Project URL og Publishable key fra Project Settings → API og lim dem inn i index.html:
 javascriptconst SB_URL = 'https://dittprosjekt.supabase.co';
 const SB_KEY = 'din-publishable-key';
-3. Deploy til Vercel
+3. Anthropic API-nøkkel
+Opprett en konto på console.anthropic.com og generer en API-nøkkel.
+Legg den til i Vercel under Settings → Environment Variables:
+ANTHROPIC_API_KEY = din-api-nøkkel
+4. Deploy til Vercel
 Koble GitHub-repoet til vercel.com og deploy. Fremtidige oppdateringer deployes automatisk når du pusher til main.
+
+Struktur
+nickotrening/
+├── index.html          # Hele frontend-appen
+├── api/
+│   └── exercise-info.js  # Vercel serverless function for AI-info
+└── README.md
 
 Oppdatere appen
 
-Gjør endringer i index.html
-Last opp til GitHub (erstatt eksisterende fil)
+Gjør endringer i index.html (eller api/exercise-info.js)
+Last opp til GitHub
 Vercel oppdaterer automatisk innen 30 sekunder
 
 
