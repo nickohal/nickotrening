@@ -174,6 +174,55 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .pr-weight{font-family:var(--mono);font-size:22px;font-weight:500;color:var(--orange)}
 .pr-reps{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
 .pr-empty{text-align:center;padding:48px 24px;color:var(--muted);font-family:var(--mono);font-size:12px;line-height:1.9}
+/* GRAPH SCREEN */
+.graph-screen-back{padding:52px 20px 16px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.graph-ex-selector{margin:14px 16px 0;display:flex;flex-wrap:wrap;gap:8px}
+.graph-ex-btn{font-family:var(--mono);font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid var(--border2);background:var(--bg2);color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+.graph-ex-btn.active{background:var(--accent);border-color:var(--accent);color:#0e0e10}
+.graph-wrap{margin:16px 16px 0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;overflow:hidden}
+.graph-wrap canvas{width:100%!important;max-width:100%}
+.graph-empty{text-align:center;padding:48px 24px;color:var(--muted);font-family:var(--mono);font-size:12px}
+
+/* WARMUP BLOCK */
+.warmup-block{margin:12px 16px 0;background:rgba(96,200,240,.06);border:1px solid rgba(96,200,240,.15);border-radius:var(--r);overflow:hidden}
+.warmup-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.warmup-title{font-family:var(--mono);font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1.5px}
+.warmup-toggle{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.warmup-body{padding:0 16px 14px;display:none}
+.warmup-body.open{display:block}
+.warmup-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid rgba(96,200,240,.08)}
+.warmup-item:last-child{border-bottom:none}
+.warmup-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px}
+.warmup-text{font-size:13px;line-height:1.4}
+
+/* AI INFO PANEL */
+.ai-panel{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:none;align-items:flex-end}
+.ai-panel.open{display:flex}
+.ai-panel-inner{background:var(--bg2);border-radius:20px 20px 0 0;padding:20px 20px calc(32px + env(safe-area-inset-bottom));width:100%;max-height:80vh;overflow-y:auto}
+.ai-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.ai-panel-title{font-size:18px;font-weight:700}
+.ai-panel-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;color:var(--muted);font-size:16px;display:flex;align-items:center;justify-content:center}
+.ai-content{font-size:14px;line-height:1.7;color:var(--text)}
+.ai-content h4{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px}
+.ai-content p{margin-bottom:8px}
+.ai-loading{display:flex;align-items:center;gap:10px;padding:20px 0;color:var(--muted);font-family:var(--mono);font-size:12px}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:aiPulse 1.2s infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes aiPulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+.ex-info-btn{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:20px;background:rgba(176,96,240,.1);color:var(--purple);border:1px solid rgba(176,96,240,.2);cursor:pointer;text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+
+/* CELEBRATION */
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:700;animation:confettiFall 1.8s ease-in forwards}
+
+/* EDIT LOG */
+.edit-set-row{display:grid;grid-template-columns:28px 1fr 1fr;gap:8px;align-items:center;padding:7px 16px;border-bottom:1px solid var(--border)}
+.edit-set-row:last-child{border-bottom:none}
+.edit-set-row input{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:7px 6px;color:var(--text);font-family:var(--mono);font-size:13px;width:100%;text-align:center;-webkit-appearance:none}
+.edit-set-row input:focus{outline:none;border-color:var(--accent)}
+.edit-log-save{margin:12px 16px;width:calc(100% - 32px);padding:13px;background:var(--green);color:#0e0e10;border:none;border-radius:var(--r);font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer}
+
 
 /* EDIT */
 .edit-dag-card{margin:0 16px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
@@ -438,6 +487,30 @@ select.setting-select{background:var(--bg3);border:1px solid var(--border2);bord
 </div>
 
 <div class="toast" id="toast"></div>
+
+
+<!-- GRAPH SCREEN -->
+<div class="screen" id="screen-graph">
+  <div class="graph-screen-back">
+    <button class="back-btn" onclick="showScreen('pr')">← PR</button>
+    <h2 id="graph-title" style="font-size:20px;font-weight:800;letter-spacing:-.3px"></h2>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px" id="graph-sub"></div>
+  </div>
+  <div class="graph-ex-selector" id="graph-ex-selector"></div>
+  <div class="graph-wrap"><canvas id="graph-canvas" height="220"></canvas></div>
+  <div class="pb-wrap"></div>
+</div>
+
+<!-- AI INFO PANEL -->
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-panel-inner">
+    <div class="ai-panel-header">
+      <div class="ai-panel-title" id="ai-panel-title"></div>
+      <button class="ai-panel-close" onclick="closeAIPanel()">✕</button>
+    </div>
+    <div id="ai-panel-content"></div>
+  </div>
+</div>
 
 <!-- AUTH OVERLAY -->
 <div id="auth-overlay" style="display:flex;position:fixed;inset:0;background:var(--bg);z-index:1000;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px">
@@ -724,6 +797,7 @@ function renderSession(){
   document.getElementById('sess-title').textContent=dag.name+(dag.subtitle?' — '+dag.subtitle:'');
   document.getElementById('session-note').value=activeSession.note||'';
   document.getElementById('session-date').value=activeSession.date||toISO(new Date());
+  renderWarmup();
   renderExercises();
   updateProgress();
 }
@@ -757,6 +831,7 @@ function renderExercises(){
       </div>`;
     });
     if(pb) badges+=`<div class="badge badge-pb">PR: ${pb.kg}kg</div>`;
+    badges+=`<button class="ex-info-btn" onclick="openAIPanel('${ex.name.replace(/'/g,"\\'")}')" >AI info</button>`;
     block.innerHTML=`<div class="ex-header">
       <div style="flex:1"><div class="ex-name">${ex.name}</div><div class="ex-target">${ex.sets} sett × ${ex.reps} reps</div></div>
       <div class="ex-badges">${badges}</div>
@@ -810,7 +885,9 @@ function toggleDone(ei,si){
 
   const sd=activeSession.sessionData[ei];
   const block=document.getElementById(`ex-block-${ei}`);
-  if(block) block.classList.toggle('ex-done',sd.sets.every(s=>s.done));
+  const allExDone=sd.sets.every(s=>s.done);
+  if(block) block.classList.toggle('ex-done',allExDone);
+  if(s.done&&allExDone) celebrateExercise();
   if(s.done&&settings.restTimer) startRest();
   updateProgress();
   saveAS();
@@ -874,8 +951,9 @@ function finishSession(){
   });
   sortLogs(); saveLS(); clearAS(); clearInterval(restInterval);
   document.getElementById('rest-timer').classList.remove('visible');
+  celebrateFinish();
   showToast('Økt lagret 💪');
-  setTimeout(()=>{ renderHome(); showScreen('home'); },400);
+  setTimeout(()=>{ renderHome(); showScreen('home'); },600);
 }
 
 // ═══════════════════════════════════
@@ -937,18 +1015,61 @@ function showLogDetail(idx){
     nd.innerHTML=`<div class="hist-note-label">Notat</div>${log.note}`;
     container.appendChild(nd);
   }
-  log.exercises.forEach(ex=>{
+  log.exercises.forEach((ex,exi)=>{
     const div=document.createElement('div'); div.className='hist-ex';
+    // Header with toggle edit
+    const exHeader=document.createElement('div');
+    exHeader.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:8px';
+    exHeader.innerHTML=`<div class="hex-name" style="margin-bottom:0">${ex.name}</div>
+      <button onclick="toggleEditSets(this,${idx},${exi})" style="font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:20px;background:rgba(96,200,240,.1);color:var(--accent);border:1px solid rgba(96,200,240,.2);cursor:pointer;text-transform:uppercase;letter-spacing:1px">Rediger</button>`;
+    div.appendChild(exHeader);
+    // Pills view
+    const pillsDiv=document.createElement('div'); pillsDiv.className='hex-row'; pillsDiv.id=`pills-${idx}-${exi}`;
     const pills=ex.sets.filter(s=>s.done||s.kg||s.reps).map(s=>{
       let t=s.kg?s.kg+'kg':''; if(s.kg&&s.reps)t+='×'; if(s.reps)t+=s.reps;
       return t?`<span class="hex-pill">${t}</span>`:'';
     }).join('');
-    div.innerHTML=`<div class="hex-name">${ex.name}</div>
-      <div class="hex-row">${pills||'<span style="color:var(--muted);font-size:11px;font-family:var(--mono)">ikke logget</span>'}</div>`;
+    pillsDiv.innerHTML=pills||'<span style="color:var(--muted);font-size:11px;font-family:var(--mono)">ikke logget</span>';
+    div.appendChild(pillsDiv);
+    // Edit view (hidden)
+    const editDiv=document.createElement('div'); editDiv.id=`edit-sets-${idx}-${exi}`; editDiv.style.display='none';
+    let editHtml=`<div style="display:grid;grid-template-columns:28px 1fr 1fr;gap:8px;padding:4px 0 2px">
+      <span></span><span style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;text-transform:uppercase">kg</span>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;text-transform:uppercase">reps</span></div>`;
+    ex.sets.forEach((s,si)=>{
+      editHtml+=`<div class="edit-set-row">
+        <span class="set-num">${si+1}</span>
+        <input type="number" inputmode="decimal" value="${s.kg||''}" placeholder="—"
+          onchange="updateLogSet(${idx},${exi},${si},'kg',this.value)">
+        <input type="number" inputmode="numeric" value="${s.reps||''}" placeholder="—"
+          onchange="updateLogSet(${idx},${exi},${si},'reps',this.value)">
+      </div>`;
+    });
+    editDiv.innerHTML=editHtml;
+    div.appendChild(editDiv);
     container.appendChild(div);
   });
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-logdetail').classList.add('active');
+}
+
+function toggleEditSets(btn, logIdx, exIdx){
+  const pillsDiv=document.getElementById(`pills-${logIdx}-${exIdx}`);
+  const editDiv=document.getElementById(`edit-sets-${logIdx}-${exIdx}`);
+  const isEditing=editDiv.style.display!=='none';
+  if(isEditing){
+    editDiv.style.display='none'; pillsDiv.style.display='flex';
+    btn.textContent='Rediger';
+    sortLogs(); saveLS(); showToast('Lagret');
+  } else {
+    editDiv.style.display='block'; pillsDiv.style.display='none';
+    btn.textContent='Ferdig';
+  }
+}
+
+function updateLogSet(logIdx, exIdx, setIdx, field, val){
+  if(!logs[logIdx]||!logs[logIdx].exercises[exIdx]) return;
+  logs[logIdx].exercises[exIdx].sets[setIdx][field]=val;
 }
 
 function updateLogDate(idx, dateStr){
@@ -982,6 +1103,7 @@ function renderPR(){
   prs.forEach(({name,pb})=>{
     const d=new Date(pb.date);
     const card=document.createElement('div'); card.className='pr-card';
+    card.style.cursor='pointer';
     card.innerHTML=`<div class="pr-left">
       <div class="pr-exname">${name}</div>
       <div class="pr-date">${NO_DAYS_FULL[d.getDay()]} ${fmt(d)}</div>
@@ -989,7 +1111,9 @@ function renderPR(){
     <div class="pr-right">
       <div class="pr-weight">${pb.kg} kg</div>
       ${pb.reps?`<div class="pr-reps">${pb.reps} reps</div>`:''}
+      <div style="font-family:var(--mono);font-size:9px;color:var(--accent);margin-top:4px;text-transform:uppercase;letter-spacing:1px">Graf →</div>
     </div>`;
+    card.onclick=()=>showGraph(name);
     list.appendChild(card);
   });
 }
@@ -1279,6 +1403,194 @@ async function handleAuth(isSignup){
     const loaded = await loadFromCloud();
     renderHome(); renderPR();
   } catch(e){ errEl.textContent='Nettverksfeil, prøv igjen'; btn.textContent=isSignup?'Opprett konto':'Logg inn'; btn.disabled=false; }
+}
+
+
+// ═══════════════════════════════════
+//  WARMUP
+// ═══════════════════════════════════
+const WARMUP = {
+  styrke: [
+    "5 min lett cardio — sykkel, gange eller lett jogg",
+    "Dynamisk tøying: benhev, hofterotasjon, armsirkler — 10 reps hver",
+    "Aktivering: band pull-apart, glute bridge — 2×15",
+    "Oppvarmingssett på første hovedøvelse: 40% × 10, 60% × 5, 80% × 3"
+  ],
+  hypertrofi: [
+    "5 min lett cardio for å øke blodgjennomstrømning",
+    "Dynamisk mobilitet: torsorotasjon, spiderman lunge — 8 reps hver side",
+    "Lett aktivering av målmusklene — 1–2 sett med lav vekt",
+    "Jobb deg gradvis opp til arbeidsvekt over 2–3 oppvarmingssett"
+  ]
+};
+
+function renderWarmup(){
+  const existing=document.getElementById('warmup-block');
+  if(existing) existing.remove();
+  const dag=PROGRAM.find(d=>d.id===activeSession.dagId);
+  if(!dag) return;
+  const tips=WARMUP[dag.type]||WARMUP.styrke;
+  const block=document.createElement('div'); block.className='warmup-block'; block.id='warmup-block';
+  block.innerHTML=`<div class="warmup-header" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.warmup-toggle').textContent=this.nextElementSibling.classList.contains('open')?'Skjul':'Vis'">
+    <div class="warmup-title">🔥 Oppvarming</div>
+    <div class="warmup-toggle">Vis</div>
+  </div>
+  <div class="warmup-body">
+    ${tips.map(t=>`<div class="warmup-item"><div class="warmup-dot"></div><div class="warmup-text">${t}</div></div>`).join('')}
+  </div>`;
+  const dateRow=document.querySelector('.date-row');
+  if(dateRow) dateRow.after(block);
+}
+
+// ═══════════════════════════════════
+//  CELEBRATION
+// ═══════════════════════════════════
+function celebrateExercise(){
+  const colors=['#c8f060','#60c8f0','#f0a060','#f060c8','#60f0a0'];
+  for(let i=0;i<12;i++){
+    const el=document.createElement('div'); el.className='confetti-piece';
+    el.style.cssText=`left:${20+Math.random()*60}%;top:40%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${1+Math.random()*.8}s;animation-delay:${Math.random()*.3}s;border-radius:${Math.random()>0.5?'50%':'2px'}`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 2200);
+  }
+}
+
+function celebrateFinish(){
+  const colors=['#c8f060','#60c8f0','#f0a060','#f060c8','#ffffff','#60f0a0'];
+  for(let i=0;i<40;i++){
+    const el=document.createElement('div'); el.className='confetti-piece';
+    el.style.cssText=`left:${Math.random()*100}%;top:-10px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${1.5+Math.random()*1.2}s;animation-delay:${Math.random()*.6}s;border-radius:${Math.random()>0.5?'50%':'2px'};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 3000);
+  }
+}
+
+// ═══════════════════════════════════
+//  GRAPH
+// ═══════════════════════════════════
+let chartInstance = null;
+
+function showGraph(exName){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-graph').classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-pr').classList.add('active');
+  document.getElementById('graph-title').textContent=exName;
+  renderGraph(exName);
+  // Build exercise selector
+  const sel=document.getElementById('graph-ex-selector'); sel.innerHTML='';
+  getAllExerciseNames().forEach(name=>{
+    const btn=document.createElement('button'); btn.className='graph-ex-btn'+(name===exName?' active':'');
+    btn.textContent=name; btn.onclick=()=>{
+      document.querySelectorAll('.graph-ex-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('graph-title').textContent=name;
+      renderGraph(name);
+    };
+    sel.appendChild(btn);
+  });
+}
+
+function renderGraph(exName){
+  const wrap=document.getElementById('graph-wrap')||document.querySelector('.graph-wrap');
+  const canvas=document.getElementById('graph-canvas');
+  const ctx=canvas.getContext('2d');
+
+  // Gather data points
+  const points=[];
+  [...logs].reverse().forEach(log=>{
+    const ex=log.exercises.find(e=>e.name===exName);
+    if(ex){
+      const maxKg=Math.max(...ex.sets.filter(s=>s.kg).map(s=>parseFloat(s.kg)||0));
+      if(maxKg>0) points.push({date:new Date(log.date),kg:maxKg});
+    }
+  });
+
+  const sub=document.getElementById('graph-sub');
+  if(!points.length){ sub.textContent='Ingen data ennå'; ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+  sub.textContent=`${points.length} økter logget`;
+
+  const isLight=document.body.classList.contains('light');
+  const accentColor=isLight?'#1a9fd4':'#60c8f0';
+  const gridColor=isLight?'rgba(0,0,0,0.08)':'rgba(255,255,255,0.07)';
+  const textColor=isLight?'#88877f':'#7a7a82';
+  const fillColor=isLight?'rgba(26,159,212,0.08)':'rgba(96,200,240,0.08)';
+
+  // Destroy old chart
+  if(chartInstance) chartInstance.destroy();
+
+  // Load Chart.js if needed
+  if(!window.Chart){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js';
+    s.onload=()=>drawChart(ctx, points, accentColor, gridColor, textColor, fillColor);
+    document.head.appendChild(s);
+  } else {
+    drawChart(ctx, points, accentColor, gridColor, textColor, fillColor);
+  }
+}
+
+function drawChart(ctx, points, accentColor, gridColor, textColor, fillColor){
+  const NO_M=['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+  chartInstance = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: points.map(p=>`${p.date.getDate()}. ${NO_M[p.date.getMonth()]}`),
+      datasets:[{
+        data: points.map(p=>p.kg),
+        borderColor: accentColor,
+        backgroundColor: fillColor,
+        borderWidth: 2.5,
+        pointBackgroundColor: accentColor,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'rgba(0,0,0,0.8)',
+        titleFont:{family:"'DM Mono', monospace",size:11},
+        bodyFont:{family:"'DM Mono', monospace",size:13},
+        callbacks:{label:ctx=>`${ctx.raw} kg`}
+      }},
+      scales:{
+        x:{grid:{color:gridColor},ticks:{color:textColor,font:{family:"'DM Mono', monospace",size:10},maxRotation:45}},
+        y:{grid:{color:gridColor},ticks:{color:textColor,font:{family:"'DM Mono', monospace",size:10},callback:v=>v+' kg'},beginAtZero:false}
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════
+//  AI INFO PANEL
+// ═══════════════════════════════════
+async function openAIPanel(exName){
+  document.getElementById('ai-panel-title').textContent=exName;
+  document.getElementById('ai-panel-content').innerHTML=`<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Henter info...</span></div>`;
+  document.getElementById('ai-panel').classList.add('open');
+
+  try {
+    const res = await fetch('/api/exercise-info', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({exercise: exName})
+    });
+    if(!res.ok) throw new Error('API error');
+    const data = await res.json();
+    document.getElementById('ai-panel-content').innerHTML=`<div class="ai-content">${data.html}</div>`;
+  } catch(e){
+    document.getElementById('ai-panel-content').innerHTML=`<div class="ai-content">
+      <h4>Kunne ikke hente info</h4>
+      <p>Sett opp Vercel API-funksjon for å aktivere AI-info. Se README for instruksjoner.</p>
+    </div>`;
+  }
+}
+
+function closeAIPanel(){
+  document.getElementById('ai-panel').classList.remove('open');
 }
 
 // ═══════════════════════════════════
