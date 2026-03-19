@@ -1480,7 +1480,7 @@ function renderWarmup(){
     ${tips.map(t=>`<div class="warmup-item"><div class="warmup-dot"></div><div class="warmup-text">${t}</div></div>`).join('')}
   </div>`;
   const motBlock=document.createElement('div'); motBlock.className='motivasjon-block'; motBlock.id='motivasjon-block';
-  motBlock.innerHTML=`<div class="motivasjon-label">Dagens motivasjon</div><div class="motivasjon-tekst">For Betti. For deg. Løft.</div>`;
+  motBlock.innerHTML=`<div class="motivasjon-label">Dagens motivasjon</div><div class="motivasjon-tekst">For deg. Løft.</div>`;
   const dateRow=document.querySelector('.date-row');
   if(dateRow) dateRow.after(block);
   block.after(motBlock);
