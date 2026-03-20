@@ -195,9 +195,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .warmup-item:last-child{border-bottom:none}
 .warmup-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px}
 .warmup-text{font-size:13px;line-height:1.4}
-.motivasjon-block{margin:8px 16px 0;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;text-align:center}
-.motivasjon-label{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
-.motivasjon-tekst{font-family:var(--sans);font-size:15px;font-weight:700;color:var(--text);line-height:1.4}
 
 /* AI INFO PANEL */
 .ai-panel{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;display:none;align-items:flex-end}
@@ -1479,11 +1476,8 @@ function renderWarmup(){
   <div class="warmup-body">
     ${tips.map(t=>`<div class="warmup-item"><div class="warmup-dot"></div><div class="warmup-text">${t}</div></div>`).join('')}
   </div>`;
-  const motBlock=document.createElement('div'); motBlock.className='motivasjon-block'; motBlock.id='motivasjon-block';
-  motBlock.innerHTML=`<div class="motivasjon-label">Dagens motivasjon</div><div class="motivasjon-tekst">For deg. Løft.</div>`;
   const dateRow=document.querySelector('.date-row');
   if(dateRow) dateRow.after(block);
-  block.after(motBlock);
 }
 
 // ═══════════════════════════════════
