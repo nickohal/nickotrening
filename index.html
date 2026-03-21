@@ -7,13 +7,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Nicko 💪</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap');
 :root{
   --bg:#272730;--bg2:#2f2f3a;--bg3:#383844;--bg4:#40404e;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
   --text:#f0efe8;--muted:#7a7a82;--muted2:#44444c;
   --accent:#60c8f0;--green:#c8f060;--red:#f06060;--orange:#f0a060;--purple:#b060f0;
-  --mono:'DM Mono',monospace;--sans:'Syne',sans-serif;
+  --mono:'DM Mono',monospace;--sans:'DM Mono',monospace;
   --r:14px;--rs:8px;
 }
 .light{
@@ -254,6 +254,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .add-dag-btn{margin:0 16px 10px;width:calc(100% - 32px);padding:13px;background:transparent;border:1px dashed var(--border2);border-radius:var(--r);font-family:var(--mono);font-size:12px;color:var(--muted);cursor:pointer;text-transform:uppercase;letter-spacing:1px}
 .add-dag-btn:active{background:var(--bg3)}
 .del-dag-btn{width:26px;height:26px;border-radius:50%;background:rgba(240,96,96,.08);border:1px solid rgba(240,96,96,.15);color:var(--red);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.edit-dag-meta{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px}
+.edit-dag-meta input,.edit-dag-meta select{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:13px;width:100%}
+.edit-dag-meta input:focus,.edit-dag-meta select:focus{outline:none;border-color:var(--accent)}
+.edit-dag-meta label{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
 .save-program-btn{margin:4px 16px 14px;width:calc(100% - 32px);padding:14px;background:var(--accent);color:#0e0e10;border:none;border-radius:var(--r);font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer}
 
 /* SETTINGS */
@@ -1164,6 +1168,17 @@ function renderEditList(container, days){
 
     function rebuild(){
       body.innerHTML='';
+      // Meta edit section
+      const meta=document.createElement('div'); meta.className='edit-dag-meta';
+      const isSepNow=PROGRAM[di].separat;
+      meta.innerHTML=`
+        <div><label>Navn</label><input type="text" value="${PROGRAM[di].name}" oninput="PROGRAM[${di}].name=this.value;updateDagHeader(${di})"></div>
+        <div><label>Undertittel</label><input type="text" value="${PROGRAM[di].subtitle||''}" placeholder="Valgfritt" oninput="PROGRAM[${di}].subtitle=this.value;updateDagHeader(${di})"></div>
+        ${!isSepNow?`<div><label>Type</label><select onchange="PROGRAM[${di}].type=this.value;updateDagHeader(${di})">
+          <option value="styrke" ${PROGRAM[di].type==='styrke'?'selected':''}>Styrke</option>
+          <option value="hypertrofi" ${PROGRAM[di].type==='hypertrofi'?'selected':''}>Hypertrofi</option>
+        </select></div>`:''}`;
+      body.appendChild(meta);
       PROGRAM[di].exercises.forEach((ex,ei)=>{
         const row=document.createElement('div');
         row.className='edit-ex-row'; row.draggable=true;
@@ -1200,11 +1215,23 @@ function renderEditList(container, days){
 
     header.onclick=()=>{ header.classList.toggle('open'); body.classList.toggle('open'); rebuild(); };
     PROGRAM[di]._rebuild=rebuild;
+    PROGRAM[di]._header=header;
     card.appendChild(header); card.appendChild(body);
     container.appendChild(card);
   });
 }
 
+function updateDagHeader(di){
+  const dag=PROGRAM[di]; const h=dag._header; if(!h) return;
+  const isSep=dag.separat;
+  const tc=isSep?'tag-separat':(dag.type==='styrke'?'tag-styrke':'tag-hypertrofi');
+  const wasOpen=h.classList.contains('open');
+  h.innerHTML=`<span class="dag-tag ${tc}" style="margin:0;flex-shrink:0">${isSep?'Separat':dag.type}</span>
+    <h3>${dag.name}${dag.subtitle?' — '+dag.subtitle:''}</h3>
+    <span class="chevron">▼</span>
+    <button class="del-dag-btn" onclick="event.stopPropagation();deleteDag(${di})">✕</button>`;
+  if(wasOpen) h.classList.add('open');
+}
 function delEx(di,ei){ PROGRAM[di].exercises.splice(ei,1); PROGRAM[di]._rebuild&&PROGRAM[di]._rebuild(); }
 function addEx(di){
   const inp=document.getElementById(`new-ex-${di}`);
